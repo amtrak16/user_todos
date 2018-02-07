@@ -114,7 +114,7 @@ class Users extends Component {
   // }
 
   render() {
-  return (
+    return (
       <div>
         <div class="row">
           <h3 class="small-2 columns">Add User</h3>
@@ -139,6 +139,8 @@ class Users extends Component {
               <li className="tab-title small-1 columns" key={idx} ><NavLink exact to={`/users/${user.name}`} activeClassName="active" activeStyle={{ padding: '5px', backgroundColor: 'lightgrey', borderRadius: '5px' }}>{user.name}</NavLink></li>
             )
           })}
+        </ul>
+
         {/* onClick={this.onNameClick} */}
 
         {/* <NavLink exact to="/users/:id" activeClassName="active" activeStyle={{ padding: '5px', backgroundColor: 'lightgrey', borderRadius: '5px' }}>{user.name}</NavLink> */}
@@ -147,37 +149,130 @@ class Users extends Component {
           <li className="tab-title small-1 columns"><NavLink exact to="/users/2" activeClassName="active" activeStyle={{ padding: '5px', backgroundColor: 'lightgrey', borderRadius: '5px' }}>User 2</NavLink></li>
           <li className="tab-title small-1 columns"><NavLink exact to="/users/3" activeClassName="active" activeStyle={{ padding: '5px', backgroundColor: 'lightgrey', borderRadius: '5px' }}>User 3</NavLink></li>
           <li className="tab-title small-1 columns"><NavLink exact to="/users/4" activeClassName="active" activeStyle={{ padding: '5px', backgroundColor: 'lightgrey', borderRadius: '5px' }}>User 4</NavLink></li> */}
-        </ul>
-        <Route exact path="/users/:id" component={UserDetail} />
+        <Route exact path="/users/:id" render={(props) => (<UserDetail {...props} />)} />
+        {/* <Route path="/users" render={(props) => (<Users {...props} />)} />  */}
       </div>
     )
   }
 }
 
-const UserDetail = (props) => {
-  console.log(props)
-  return (
-    // <hr></hr>
-    <div className="small-12 columns" >
-      <div className="card">
-        <h1 class="text-center">User {props.match.params.id}</h1>
-      </div >
-    </div>)
+class Todo {
+  constructor(
+    title,
+    content
+  ) {
+    this.title = title;
+    this.content = content;
+  }
+}
+const initialTodoState = {
+  todos: [ ],
+  todoVal: '',
+  todoMsg: '',
+  todoErr: false,
+  todoSelect: false,
+  disableSbmBtn: true
+}
+
+class UserDetail extends Component {
+  constructor(props) {
+    super(props);
+
+    this.state = initialTodoState
+    this.onTodoIn = this.onTodoIn.bind(this)
+    this.onTodoAdd = this.onTodoAdd.bind(this)
+    // this.onTodoClick = this.onTodoClick.bind(this)
+  }
+
+  onTodoIn({ target }) {
+    if (target.value.length === 0) {
+      this.setState({ todoVal: target.value, todoErr: true, todoMsg: 'Please enter a todo title.', todoSelect: false, todoRspMsg: '', disableSbmBtn: true })
+    } else {
+      this.setState({ todoVal: target.value, todoErr: false, todoMsg: '', todoSelect: false, disableSbmBtn: false })
+    }
+  }
+
+  onContentIn({ target }) {
+    if (target.value.length === 0) {
+      this.setState({ contentVal: target.value, contentErr: true, contentMsg: 'Please enter a todo content.', contentSelect: false, contentRspMsg: '', disableSbmBtn: true })
+    } else {
+      this.setState({ contentVal: target.value, contentErr: false, contentMsg: '', contentSelect: false, disableSbmBtn: false })
+    }
+  }
+
+  onTodoAdd({ target }) {
+    let newTodos = this.state.todos.slice(0)
+    let newTodo = new Todo(this.state.todoVal)
+    newTodos.push(newTodo)
+    console.log(this.state.todoVal, newTodos)
+    this.setState({ todos: newTodos })
+  }
+
+  render () {
+    return (
+      <div>
+        <div className="small-12 columns" >
+          <div className="card">
+            <h1 class="text-center">User {this.props.match.params.id}</h1>
+          </div >
+        </div>
+        <div class="row">
+          <h3 class="small-2 columns">Add Todo</h3>
+          <div class="small-2 columns md-text-field with-floating-label icon-left">
+            <input type="search" id="todo_in" placeholder='Title' value={this.state.todoVal} onChange={this.onTodoIn} />
+            <label for="todo_in"></label>
+            <span class="error">{this.state.todoMsg}</span>
+          </div>
+          <button className="button btn-cta small-2 columns" disabled={this.state.disableSbmBtn} onClick={this.onTodoAdd}>Add Todo</button>
+          <div className="small-6 columns" >&nbsp;</div>
+        </div>
+        <div class="row">
+          <div class="small-2 columns"></div>
+          <div class="small-2 columns">
+          </div>
+          <div class="small-8 columns"></div>
+        </div>
+
+        <ul class="tabs vertical">
+          {this.state.todos.map((todo, idx) => {
+            return (
+              <li className="tab-title small-3 columns" key={idx} ><NavLink exact to={`/todos/${todo.title}`} activeClassName="active" activeStyle={{ padding: '5px', backgroundColor: 'lightgrey', borderRadius: '5px' }}>{todo.title}</NavLink></li>
+            )
+          })}
+        </ul>
+        <Route exact path="/todos/:id" component={TodoDetail} />
+      </div>
+    )
+  }
+}
+
+class TodoDetail extends Component {
+  render() {
+    return (
+      <div>
+        <div className="small-12 columns" >
+          <div className="card">
+            <h1 class="text-center">Todo {this.props.match.params.id}</h1>
+          </div >
+        </div>
+      </div>
+    )
+  }
 }
 
 class Todos extends Component {
   render() {
     return (
       <div>
-        <ul>
-          <li>Todo 1</li>
-          <li>Todo 2</li>
-          <li>Todo 3</li>
-          <li>Todo 4</li>
-        </ul>
+        <div className="small-12 columns" >
+          <div className="card">
+            <h1 class="text-center">Todos</h1>
+          </div >
+        </div>
       </div>
     )
   }
 }
+
 
 export default App;
